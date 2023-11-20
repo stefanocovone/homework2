@@ -100,7 +100,7 @@ curvilinearAbscissa abscissa;
 
 double scddot = -1.0/(std::pow(accDuration_,2)-trajDuration_*accDuration_);
 
-if (time=> 0 && time <= accDuration_) {
+if (time >= 0 && time <= accDuration_) {
     abscissa.s = 0.5*scddot*std::pow(time,2);
     abscissa.sdot = scddot*time;
     abscissa.sddot = scddot;
@@ -147,8 +147,14 @@ curvilinearAbscissa KDLPlanner::cubic_polinomial(double time) {
   }
 
 
+  if (time >= 0 && time <= trajDuration_) {
+  abscissa.s = coeffs(3)*pow(time,3) + coeffs(2)*pow(time,2) + coeffs(1)*time + coeffs(0);
+  abscissa.sdot = 3*coeffs(3)*pow(time,2) + 2*coeffs(2)*time + coeffs(1);
+  abscissa.sddot = 6*coeffs(3)*time + 2*coeffs(2);
+  }
+  else {
+    // error
+  } 
 
-
-
-
+  return abscissa;
 }
