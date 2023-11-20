@@ -21,6 +21,12 @@ struct trajectory_point{
   Eigen::Vector3d acc = Eigen::Vector3d::Zero();
 };
 
+struct curvilinearAbscissa{
+    double s;
+    double sdot;
+    double sddot;
+};
+
 class KDLPlanner
 {
 
@@ -41,6 +47,7 @@ public:
     //////////////////////////////////
     KDLPlanner(double _trajDuration, double _accDuration,
                Eigen::Vector3d _trajInit, Eigen::Vector3d _trajEnd);
+
     trajectory_point compute_trajectory(double time);
 
 private:
