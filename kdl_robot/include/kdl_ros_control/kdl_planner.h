@@ -49,7 +49,7 @@ public:
                Eigen::Vector3d _trajInit, Eigen::Vector3d _trajEnd);
 
     trajectory_point compute_trajectory(double time);
-    curvilinearAbscissa KDLPlanner::trapezoidal_vel(double time, double tc);
+    curvilinearAbscissa trapezoidal_vel(double time);
 
 
 private:
