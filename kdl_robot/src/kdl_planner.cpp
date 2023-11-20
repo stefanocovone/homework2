@@ -91,3 +91,32 @@ trajectory_point KDLPlanner::compute_trajectory(double time)
   return traj;
 
 }
+
+
+
+curvilinearAbscissa KDLPlanner::trapezoidal_vel(double time){
+
+curvilinearAbscissa abscissa;
+
+double scddot = -1.0/(std::pow(accDuration_,2)-trajDuration_*accDuration_);
+
+if (time=> 0 && time <= accDuration_) {
+    abscissa.s = 0.5*scddot*std::pow(time,2);
+    abscissa.sdot = scddot*time;
+    abscissa.sddot = scddot;
+} else if (time > accDuration_ && time <= trajDuration_-accDuration_) {
+    abscissa.s = 0.5*scddot*(time-accDuration_/2);
+    abscissa.sdot = 0.5*scddot;
+    abscissa.sddot = 0;
+} else if (time > (trajDuration_-accDuration_) && time <= trajDuration_) {
+    abscissa.s = 1 - 0.5*scddot*std::pow(trajDuration_-time,2);
+    abscissa.sdot = scddot*(trajDuration_-time);
+    abscissa.sddot = -scddot;
+} else { 
+  // error
+}
+
+  return abscissa;
+
+
+}
