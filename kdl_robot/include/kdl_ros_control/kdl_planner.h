@@ -52,6 +52,8 @@ public:
     curvilinearAbscissa trapezoidal_vel(double time);
 
 
+    curvilinearAbscissa cubic_polinomial(doube time);
+
 private:
 
     KDL::Path_RoundedComposite* path_;

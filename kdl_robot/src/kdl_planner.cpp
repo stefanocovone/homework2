@@ -117,6 +117,38 @@ if (time=> 0 && time <= accDuration_) {
 }
 
   return abscissa;
+}
+
+
+
+
+
+
+
+
+curvilinearAbscissa KDLPlanner::cubic_polinomial(double time) {
+
+  curvilinearAbscissa abscissa;
+
+  static bool coeffsComputed = false;
+  static Eigen::Matrix4d CoeffsMat;
+  static Eigen::Vector4d Boundaries;
+  static Eigen::Vector4d coeffs;
+
+  CoeffsMat << 0,0,0,1,   
+              0,0,1,0,  
+              pow(trajDuration_,3),pow(trajDuration_,2),trajDuration_,1,
+              3*pow(trajDuration_,2),2*trajDuration_,1,0;
+  Boundaries << 0,0,1,0;
+
+  if (!coeffsComputed){
+    coeffs = CoeffsMat.colPivHouseholderQr().solve(Boundaries);
+    coeffsComputed = true;
+  }
+
+
+
+
 
 
 }
