@@ -13,6 +13,13 @@ KDLPlanner::KDLPlanner(double _trajDuration, double _accDuration, Eigen::Vector3
     trajEnd_ = _trajEnd;
 }
 
+// constructor to compute circular trajectory
+KDLPlanner::KDLPlanner(double _trajDuration, Eigen::Vector3d _trajInit, Eigen::Vector3d _trajRadius){
+    trajDuration_ = _trajDuration;
+    trajInit_ = _trajInit;
+    trajRadius_ = _trajRadius;
+}
+
 void KDLPlanner::CreateTrajectoryFromFrames(std::vector<KDL::Frame> &_frames,
                                             double _radius, double _eqRadius
                                             )

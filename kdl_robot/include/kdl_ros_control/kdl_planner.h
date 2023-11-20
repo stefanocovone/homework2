@@ -45,8 +45,13 @@ public:
     KDL::Trajectory* getTrajectory();
 
     //////////////////////////////////
+    // constructor to compute trapezoidal velocity profile
     KDLPlanner(double _trajDuration, double _accDuration,
                Eigen::Vector3d _trajInit, Eigen::Vector3d _trajEnd);
+    
+    // constructor to compute circular trajectory
+    KDLPlanner(double _trajDuration, 
+        Eigen::Vector3d _trajInit, Eigen::Vector3d _trajRadius);
 
     trajectory_point compute_trajectory(double time);
     curvilinearAbscissa trapezoidal_vel(double time);
@@ -63,7 +68,7 @@ private:
 
     //////////////////////////////////
     double trajDuration_, accDuration_;
-    Eigen::Vector3d trajInit_, trajEnd_;
+    Eigen::Vector3d trajInit_, trajEnd_, trajRadius_;
     trajectory_point p;
 
 };
