@@ -52,7 +52,7 @@ public:
     curvilinearAbscissa trapezoidal_vel(double time);
 
 
-    curvilinearAbscissa cubic_polinomial(doube time);
+    curvilinearAbscissa cubic_polinomial(double time);
 
 private:
 
