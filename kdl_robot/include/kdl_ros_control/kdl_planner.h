@@ -50,6 +50,8 @@ public:
 
     trajectory_point compute_trajectory(double time);
 
+    curvilinearAbscissa cubic_polinomial(doube time);
+
 private:
 
     KDL::Path_RoundedComposite* path_;
