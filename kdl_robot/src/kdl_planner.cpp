@@ -128,8 +128,8 @@ trajectory_point KDLPlanner::compute_linear_trajectory(double time){
   double norm_diff = diff.norm();
   
   traj.pos = trajInit_ + abscissa.s * (trajEnd_ - trajInit_)/norm_diff;
-  traj.vel = (trajEnd_ - trajInit_) / norm_diff;
-  traj.acc = = Eigen::Vector3d::Zero(); //non penso sia superfluo metterlo a 0 così anche se quando viene definito viene messo a 0
+  traj.vel = abscissa.sdot * (trajEnd_ - trajInit_) / norm_diff;
+  traj.acc = abscissa.sddot * (trajEnd_ - trajInit_) / norm_diff;
   return traj;
 
 
