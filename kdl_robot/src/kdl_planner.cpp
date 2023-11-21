@@ -63,43 +63,60 @@ KDL::Trajectory* KDLPlanner::getTrajectory()
 	return traject_;
 }
 
-trajectory_point KDLPlanner::compute_trajectory(double time)
-{
-  /* trapezoidal velocity profile with accDuration_ acceleration time period and trajDuration_ total duration.
-     time = current time
-     trajDuration_  = final time
-     accDuration_   = acceleration time
-     trajInit_ = trajectory initial point
-     trajEnd_  = trajectory final point */
+// trajectory_point KDLPlanner::compute_trajectory(double time)
+// {
+//   /* trapezoidal velocity profile with accDuration_ acceleration time period and trajDuration_ total duration.
+//      time = current time
+//      trajDuration_  = final time
+//      accDuration_   = acceleration time
+//      trajInit_ = trajectory initial point
+//      trajEnd_  = trajectory final point */
+// 
+//   trajectory_point traj;
+// 
+//   Eigen::Vector3d ddot_traj_c = -1.0/(std::pow(accDuration_,2)-trajDuration_*accDuration_)*(trajEnd_-trajInit_);
+// 
+//   if(time <= accDuration_)
+//   {
+//     traj.pos = trajInit_ + 0.5*ddot_traj_c*std::pow(time,2);
+//     traj.vel = ddot_traj_c*time;
+//     traj.acc = ddot_traj_c;
+//   }
+//   else if(time <= trajDuration_-accDuration_)
+//   {
+//     traj.pos = trajInit_ + ddot_traj_c*accDuration_*(time-accDuration_/2);
+//     traj.vel = ddot_traj_c*accDuration_;
+//     traj.acc = Eigen::Vector3d::Zero();
+//   }
+//   else
+//   {
+//     traj.pos = trajEnd_ - 0.5*ddot_traj_c*std::pow(trajDuration_-time,2);
+//     traj.vel = ddot_traj_c*(trajDuration_-time);
+//     traj.acc = -ddot_traj_c;
+//   }
+// 
+//   return traj;
+// 
+// }
 
-  trajectory_point traj;
 
-  Eigen::Vector3d ddot_traj_c = -1.0/(std::pow(accDuration_,2)-trajDuration_*accDuration_)*(trajEnd_-trajInit_);
+trajectory_point KDLPlanner::compute_trajectory(double time){
 
-  if(time <= accDuration_)
-  {
-    traj.pos = trajInit_ + 0.5*ddot_traj_c*std::pow(time,2);
-    traj.vel = ddot_traj_c*time;
-    traj.acc = ddot_traj_c;
-  }
-  else if(time <= trajDuration_-accDuration_)
-  {
-    traj.pos = trajInit_ + ddot_traj_c*accDuration_*(time-accDuration_/2);
-    traj.vel = ddot_traj_c*accDuration_;
-    traj.acc = Eigen::Vector3d::Zero();
-  }
-  else
-  {
-    traj.pos = trajEnd_ - 0.5*ddot_traj_c*std::pow(trajDuration_-time,2);
-    traj.vel = ddot_traj_c*(trajDuration_-time);
-    traj.acc = -ddot_traj_c;
-  }
+ curvilinearAbscissa abscissa = cubic_polinomial(time);
+ trajectory_point traj;
+ Eigen::Vector3d circleCenter = trajInit_;
+ circleCenter(2) += trajRadius_;
+ Eigen::Vector3d circle << circleCenter(0), circleCenter(1)+trajRadius_*cos(2*M_PI*abscissa.s), circleCenter(2)+trajRadius_*sin(2*M_PI*abscissa.s) >>;
+ Eigen::Vector3d circledot << 0, -trajRadius_*2*M_PI*sin(2*M_PI*abscissa.s)*abscissa.sdot, trajRadius_*2*M_PI*cos(2*M_PI*abscissa.s)*abscissa.sdot >>;
+ Eigen::Vector3d circleddot << 0, -trajRadius_*2*M_PI*(cos(2*M_PI*abscissa.s)*2*M_PI*std::pow(abscissa.sdot,2)+sin(2*M_PI*abscissa.s)*abscissa.sddot), trajRadius_2*M_PI*(-sin(2*M_PI*abscissa.s)*2*M_PI*std::pow(abscissa.sdot,2)+cos(2*M_PI*abscissa.s)*2*M_PI*abscissa.sddot) >>;
+ 
+ traj.pos = circle; 
+ traj.vel = circledot;
+ traj.acc = circleddot;
 
-  return traj;
-
+ return traj;
+   
 }
-
-
 
 curvilinearAbscissa KDLPlanner::trapezoidal_vel(double time){
 

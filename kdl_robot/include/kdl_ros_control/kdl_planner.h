@@ -14,6 +14,7 @@
 #include <kdl/utilities/error.h>
 #include <kdl/trajectory_composite.hpp>
 #include "Eigen/Dense"
+#include <cmath>
 
 struct trajectory_point{
   Eigen::Vector3d pos = Eigen::Vector3d::Zero();
