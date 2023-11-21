@@ -100,7 +100,7 @@ KDL::Trajectory* KDLPlanner::getTrajectory()
 // }
 
 
-trajectory_point KDLPlanner::compute_trajectory(double time){
+trajectory_point KDLPlanner::compute_circle_trajectory(double time){
 
  curvilinearAbscissa abscissa = cubic_polinomial(time);
  trajectory_point traj;
@@ -116,6 +116,24 @@ trajectory_point KDLPlanner::compute_trajectory(double time){
 
  return traj;
    
+}
+
+trajectory_point KDLPlanner::compute_linear_trajectory(double time){
+
+  curvilinearAbscissa abscissa = cubic_polinomial(time);
+  trajectory_point traj;
+
+  // Calcola la norma della differenza
+  Eigen::VectorXd diff = trajEnd_ - trajInit_;
+  double norm_diff = diff.norm();
+  
+  traj.pos = trajInit_ + abscissa.s * (trajEnd_ - trajInit_)/norm_diff;
+  traj.vel = (trajEnd_ - trajInit_) / norm_diff;
+  traj.acc = = Eigen::Vector3d::Zero(); //non penso sia superfluo metterlo a 0 così anche se quando viene definito viene messo a 0
+  return traj;
+
+
+
 }
 
 curvilinearAbscissa KDLPlanner::trapezoidal_vel(double time){

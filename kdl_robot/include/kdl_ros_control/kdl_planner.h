@@ -54,7 +54,8 @@ public:
     KDLPlanner(double _trajDuration, 
         Eigen::Vector3d _trajInit, Eigen::Vector3d _trajRadius);
 
-    trajectory_point compute_trajectory(double time);
+    trajectory_point compute_circle_trajectory(double time);
+    trajectory_point compute_linear_trajectory(double time);
     curvilinearAbscissa trapezoidal_vel(double time);
 
 
