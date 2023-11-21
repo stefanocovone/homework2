@@ -14,7 +14,7 @@ KDLPlanner::KDLPlanner(double _trajDuration, double _accDuration, Eigen::Vector3
 }
 
 // constructor to compute circular trajectory
-KDLPlanner::KDLPlanner(double _trajDuration, Eigen::Vector3d _trajInit, Eigen::Vector3d _trajRadius){
+KDLPlanner::KDLPlanner(double _trajDuration, Eigen::Vector3d _trajInit, double _trajRadius){
     trajDuration_ = _trajDuration;
     trajInit_ = _trajInit;
     trajRadius_ = _trajRadius;
@@ -102,13 +102,28 @@ KDL::Trajectory* KDLPlanner::getTrajectory()
 
 trajectory_point KDLPlanner::compute_circle_trajectory(double time){
 
+    // Debug
+    // std::cout << "radius: " << trajRadius_ << std::endl;
+
  curvilinearAbscissa abscissa = cubic_polinomial(time);
  trajectory_point traj;
  Eigen::Vector3d circleCenter = trajInit_;
- circleCenter(2) += trajRadius_;
- Eigen::Vector3d circle << circleCenter(0), circleCenter(1)+trajRadius_*cos(2*M_PI*abscissa.s), circleCenter(2)+trajRadius_*sin(2*M_PI*abscissa.s) >>;
- Eigen::Vector3d circledot << 0, -trajRadius_*2*M_PI*sin(2*M_PI*abscissa.s)*abscissa.sdot, trajRadius_*2*M_PI*cos(2*M_PI*abscissa.s)*abscissa.sdot >>;
- Eigen::Vector3d circleddot << 0, -trajRadius_*2*M_PI*(cos(2*M_PI*abscissa.s)*2*M_PI*std::pow(abscissa.sdot,2)+sin(2*M_PI*abscissa.s)*abscissa.sddot), trajRadius_2*M_PI*(-sin(2*M_PI*abscissa.s)*2*M_PI*std::pow(abscissa.sdot,2)+cos(2*M_PI*abscissa.s)*2*M_PI*abscissa.sddot) >>;
+ circleCenter(1) += trajRadius_;
+
+ Eigen::Vector3d circle;
+ circle << circleCenter(0), 
+           circleCenter(1)-trajRadius_*cos(2*M_PI*abscissa.s), 
+           circleCenter(2)-trajRadius_*sin(2*M_PI*abscissa.s);
+
+ Eigen::Vector3d circledot;
+ circledot << 0, 
+              2*M_PI*trajRadius_*abscissa.sdot*sin(2*M_PI*abscissa.s),
+             -2*M_PI*trajRadius_*abscissa.sdot*cos(2*M_PI*abscissa.s);
+ 
+ Eigen::Vector3d circleddot;
+ circleddot << 0,
+               4*pow(M_PI,2)*trajRadius_*std::pow(abscissa.sdot,2)*cos(2*M_PI*abscissa.s) + 2*M_PI*trajRadius_*pow(abscissa.sdot,2)*sin(2*M_PI*abscissa.s),
+               4*pow(M_PI,2)*trajRadius_*std::pow(abscissa.sdot,2)*sin(2*M_PI*abscissa.s) - 2*M_PI*trajRadius_*pow(abscissa.sdot,2)*cos(2*M_PI*abscissa.s);
  
  traj.pos = circle; 
  traj.vel = circledot;
@@ -127,13 +142,14 @@ trajectory_point KDLPlanner::compute_linear_trajectory(double time){
   Eigen::VectorXd diff = trajEnd_ - trajInit_;
   double norm_diff = diff.norm();
   
-  traj.pos = trajInit_ + abscissa.s * (trajEnd_ - trajInit_)/norm_diff;
-  traj.vel = abscissa.sdot * (trajEnd_ - trajInit_) / norm_diff;
-  traj.acc = abscissa.sddot * (trajEnd_ - trajInit_) / norm_diff;
+  traj.pos = trajInit_ + abscissa.s * (trajEnd_ - trajInit_);
+  traj.vel = abscissa.sdot * (trajEnd_ - trajInit_);
+  traj.acc = abscissa.sddot * (trajEnd_ - trajInit_);
+
+
+
+  std::cout << "s: " << abscissa.s << std::endl;
   return traj;
-
-
-
 }
 
 curvilinearAbscissa KDLPlanner::trapezoidal_vel(double time){
@@ -177,10 +193,10 @@ curvilinearAbscissa KDLPlanner::cubic_polinomial(double time) {
   static Eigen::Vector4d Boundaries;
   static Eigen::Vector4d coeffs;
 
-  CoeffsMat << 0,0,0,1,   
-              0,0,1,0,  
-              pow(trajDuration_,3),pow(trajDuration_,2),trajDuration_,1,
-              3*pow(trajDuration_,2),2*trajDuration_,1,0;
+  CoeffsMat << 1,0,0,0,
+               0,1,0,0,
+               1,trajDuration_,pow(trajDuration_,2),pow(trajDuration_,3),
+               0,1,2*trajDuration_,3*pow(trajDuration_,2),
   Boundaries << 0,0,1,0;
 
   if (!coeffsComputed){
@@ -197,6 +213,9 @@ curvilinearAbscissa KDLPlanner::cubic_polinomial(double time) {
   else {
     // error
   } 
+  // DEBUG
+  // std::cout << "coeffs: " << coeffs << std::endl;
+  // std::cout << "s: " << abscissa.s << std::endl;
 
   return abscissa;
 }

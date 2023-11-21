@@ -52,7 +52,7 @@ public:
     
     // constructor to compute circular trajectory
     KDLPlanner(double _trajDuration, 
-        Eigen::Vector3d _trajInit, Eigen::Vector3d _trajRadius);
+        Eigen::Vector3d _trajInit, double _trajRadius);
 
     // trajectory_point compute_trajectory(double time);
     trajectory_point compute_circle_trajectory(double time);
@@ -70,8 +70,8 @@ private:
 	KDL::Trajectory* traject_;
 
     //////////////////////////////////
-    double trajDuration_, accDuration_;
-    Eigen::Vector3d trajInit_, trajEnd_, trajRadius_;
+    double trajDuration_, accDuration_, trajRadius_;
+    Eigen::Vector3d trajInit_, trajEnd_;
     trajectory_point p;
 
 };
