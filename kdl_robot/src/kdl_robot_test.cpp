@@ -147,16 +147,28 @@ int main(int argc, char **argv)
     Eigen::Vector3d end_position;
     end_position << init_cart_pose.p.x(), -init_cart_pose.p.y(), init_cart_pose.p.z();
 
-    // Plan trajectory
-    double traj_duration = 1.5, acc_duration = 0.5, t = 0.0, init_time_slot = 1.0;
-    // KDLPlanner planner(traj_duration, acc_duration, init_position, end_position); // currently using trapezoidal velocity profile
-    double traj_radius = 0.2;
-    KDLPlanner planner(traj_duration,init_position,traj_radius);
+    // Plan trajectory    
+    double traj_duration = 1.5, acc_duration = 0.5, t = 0.0, init_time_slot = 1.0, traj_radius = 0.2;
+
+    /////////////////// TESTING /////////////////////////////////////////////////////////
+    // uncomment this for linear trajectory with trapezoidal profile
+    // KDLPlanner planner(traj_duration, acc_duration, init_position, end_position);
+
+    // uncomment this for linear trajectory with cubic profile
+    // KDLPlanner planner(traj_duration, init_position, end_position);
+
+    // uncomment this for circle trajectory with trapezoidal profile
+    // KDLPlanner planner(traj_duration, acc_duration, init_position, traj_radius);
+
+    // uncomment this for circle trajectory with cubic profile
+    KDLPlanner planner(traj_duration, init_position, traj_radius);
+    /////////////////////////////////////////////////////////////////////////////////////
+
     // Retrieve the first trajectory point
-    trajectory_point p = planner.compute_circle_trajectory(t);
+    trajectory_point p = planner.compute_trajectory(t);
 
     // Gains
-    double Kp = 50, Kd = sqrt(Kp);
+    double Kp = 80, Kd = 1.3*sqrt(Kp);
 
     // Retrieve initial simulation time
     ros::Time begin = ros::Time::now();
@@ -182,11 +194,11 @@ int main(int argc, char **argv)
             des_cart_acc = KDL::Twist::Zero();
             if (t <= init_time_slot) // wait a second
             {
-                p = planner.compute_circle_trajectory(0.0);
+                p = planner.compute_trajectory(0.0);
             }
             else if(t > init_time_slot && t <= traj_duration + init_time_slot)
             {
-                p = planner.compute_circle_trajectory(t-init_time_slot);
+                p = planner.compute_trajectory(t-init_time_slot);
                 des_cart_vel = KDL::Twist(KDL::Vector(p.vel[0], p.vel[1], p.vel[2]),KDL::Vector::Zero());
                 des_cart_acc = KDL::Twist(KDL::Vector(p.acc[0], p.acc[1], p.acc[2]),KDL::Vector::Zero());
             }

@@ -5,6 +5,7 @@ KDLPlanner::KDLPlanner(double _maxVel, double _maxAcc)
     velpref_ = new KDL::VelocityProfile_Trap(_maxVel,_maxAcc);
 }
 
+/*
 KDLPlanner::KDLPlanner(double _trajDuration, double _accDuration, Eigen::Vector3d _trajInit, Eigen::Vector3d _trajEnd)
 {
     trajDuration_ = _trajDuration;
@@ -19,6 +20,51 @@ KDLPlanner::KDLPlanner(double _trajDuration, Eigen::Vector3d _trajInit, double _
     trajInit_ = _trajInit;
     trajRadius_ = _trajRadius;
 }
+
+*/
+
+////////////////////////////////// CONSTRUCTORS
+    // constructor to compute linear trajectory with trapezoidal velocity profile
+    KDLPlanner::KDLPlanner(double _trajDuration, double _accDuration,
+               Eigen::Vector3d _trajInit, Eigen::Vector3d _trajEnd){
+                trajDuration_ = _trajDuration;
+                accDuration_ = _accDuration;
+                trajInit_ = _trajInit;
+                trajEnd_ = _trajEnd;
+                trajRadius_ = -1;
+               }
+
+
+    // constructor to compute linear trajectory with cubic polinomial profile
+    KDLPlanner::KDLPlanner(double _trajDuration,
+               Eigen::Vector3d _trajInit, Eigen::Vector3d _trajEnd){
+                trajDuration_ = _trajDuration;
+                accDuration_ = -1;
+                trajInit_ = _trajInit;
+                trajEnd_ = _trajEnd;
+                trajRadius_ = -1;
+               }
+
+    // constructor to compute circular trajectory with trapezoidal velocity profile
+    KDLPlanner::KDLPlanner(double _trajDuration, double _accDuration,
+               Eigen::Vector3d _trajInit, double _trajRadius){
+                trajDuration_ = _trajDuration;
+                accDuration_ = _accDuration;
+                trajInit_ = _trajInit;
+                trajEnd_ = _trajInit;
+                trajRadius_ = _trajRadius;
+               }
+    
+    // constructor to compute circular trajectory with cubic polinomial profile
+    KDLPlanner::KDLPlanner(double _trajDuration, 
+        Eigen::Vector3d _trajInit, double _trajRadius){
+                trajDuration_ = _trajDuration;
+                accDuration_ = -1;
+                trajInit_ = _trajInit;
+                trajEnd_ = _trajInit;
+                trajRadius_ = _trajRadius;
+        }
+    //////////////////////////////////////////
 
 void KDLPlanner::CreateTrajectoryFromFrames(std::vector<KDL::Frame> &_frames,
                                             double _radius, double _eqRadius
@@ -99,13 +145,35 @@ KDL::Trajectory* KDLPlanner::getTrajectory()
 // 
 // }
 
+trajectory_point KDLPlanner::compute_trajectory(double time){
+
+  trajectory_point traj;
+  if (trajRadius_ < 0) {
+    traj = compute_linear_trajectory(time);
+  }
+  else if (trajInit_.isApprox(trajEnd_)) {
+    traj = compute_circle_trajectory(time);
+  }
+  else {
+    // Constructor error
+  }
+  return traj;
+}
+
 
 trajectory_point KDLPlanner::compute_circle_trajectory(double time){
 
     // Debug
     // std::cout << "radius: " << trajRadius_ << std::endl;
 
- curvilinearAbscissa abscissa = cubic_polinomial(time);
+    curvilinearAbscissa abscissa;
+    if (accDuration_ < 0) {
+      abscissa = cubic_polinomial(time);
+    }
+    else {
+      abscissa = trapezoidal_vel(time);
+    }
+
  trajectory_point traj;
  Eigen::Vector3d circleCenter = trajInit_;
  circleCenter(1) += trajRadius_;
@@ -137,18 +205,14 @@ trajectory_point KDLPlanner::compute_linear_trajectory(double time){
 
   curvilinearAbscissa abscissa = cubic_polinomial(time);
   trajectory_point traj;
-
-  // Calcola la norma della differenza
-  Eigen::VectorXd diff = trajEnd_ - trajInit_;
-  double norm_diff = diff.norm();
   
   traj.pos = trajInit_ + abscissa.s * (trajEnd_ - trajInit_);
   traj.vel = abscissa.sdot * (trajEnd_ - trajInit_);
   traj.acc = abscissa.sddot * (trajEnd_ - trajInit_);
 
 
-
-  std::cout << "s: " << abscissa.s << std::endl;
+  // debug
+  // std::cout << "s: " << abscissa.s << std::endl;
   return traj;
 }
 
