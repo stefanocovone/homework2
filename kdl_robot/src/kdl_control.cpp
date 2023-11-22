@@ -16,6 +16,7 @@ Eigen::VectorXd KDLController::idCntr(KDL::JntArray &_qd,
 
     // calculate errors
     Eigen::VectorXd e = _qd.data - q;
+    std::cout << "error norm: " << e.norm() << std::endl;
     Eigen::VectorXd de = _dqd.data - dq;
 
     Eigen::VectorXd ddqd = _ddqd.data;

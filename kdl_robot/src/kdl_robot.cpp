@@ -178,6 +178,17 @@ KDL::JntArray KDLRobot::getInvKin(const KDL::JntArray &q,
     }
     return jntArray_out_;
 }
+
+void KDLRobot::getInverseKinematics(KDL::Frame &f,
+                              KDL::Twist &twist,
+                              KDL::Twist &acc,
+                              KDL::JntArray &q,
+                              KDL::JntArray &dq,
+                              KDL::JntArray &ddq){
+    q = getInvKin(q,f);
+    ikVelSol_->CartToJnt(q,twist,dq);
+
+                              }
 ////////////////////////////////////////////////////////////////////////////////
 //                              END-EFFECTOR                                  //
 ////////////////////////////////////////////////////////////////////////////////

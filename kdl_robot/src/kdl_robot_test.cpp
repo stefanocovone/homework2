@@ -152,7 +152,7 @@ int main(int argc, char **argv)
 
     /////////////////// TESTING /////////////////////////////////////////////////////////
     // uncomment this for linear trajectory with trapezoidal profile
-    // KDLPlanner planner(traj_duration, acc_duration, init_position, end_position);
+    KDLPlanner planner(traj_duration, acc_duration, init_position, end_position);
 
     // uncomment this for linear trajectory with cubic profile
     // KDLPlanner planner(traj_duration, init_position, end_position);
@@ -161,7 +161,7 @@ int main(int argc, char **argv)
     // KDLPlanner planner(traj_duration, acc_duration, init_position, traj_radius);
 
     // uncomment this for circle trajectory with cubic profile
-    KDLPlanner planner(traj_duration, init_position, traj_radius);
+    // KDLPlanner planner(traj_duration, init_position, traj_radius);
     /////////////////////////////////////////////////////////////////////////////////////
 
     // Retrieve the first trajectory point
@@ -223,9 +223,9 @@ int main(int argc, char **argv)
 
             // inverse kinematics
             qd.data << jnt_pos[0], jnt_pos[1], jnt_pos[2], jnt_pos[3], jnt_pos[4], jnt_pos[5], jnt_pos[6];
-            qd = robot.getInvKin(qd, des_pose);
+            // qd = robot.getInvKin(qd, des_pose);
 
-            //robot.getInverseKinematics(des_pose, des_cart_vel, des_cart_acc,qd,dqd,ddqd);
+            robot.getInverseKinematics(des_pose, des_cart_vel, des_cart_acc,qd,dqd,ddqd);
 
             // joint space inverse dynamics control
             tau = controller_.idCntr(qd, dqd, ddqd, Kp, Kd);
