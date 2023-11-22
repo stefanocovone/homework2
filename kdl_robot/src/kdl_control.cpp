@@ -8,7 +8,7 @@ KDLController::KDLController(KDLRobot &_robot)
 Eigen::VectorXd KDLController::idCntr(KDL::JntArray &_qd,
                                       KDL::JntArray &_dqd,
                                       KDL::JntArray &_ddqd,
-                                      double _Kp, double _Kd)
+                                      double _Kp, double _Kd, double &e_norm)
 {
     // read current state
     Eigen::VectorXd q = robot_->getJntValues();
@@ -17,6 +17,7 @@ Eigen::VectorXd KDLController::idCntr(KDL::JntArray &_qd,
     // calculate errors
     Eigen::VectorXd e = _qd.data - q;
     std::cout << "error norm: " << e.norm() << std::endl;
+    e_norm = e.norm();
     Eigen::VectorXd de = _dqd.data - dq;
 
     Eigen::VectorXd ddqd = _ddqd.data;
@@ -28,7 +29,7 @@ Eigen::VectorXd KDLController::idCntr(KDL::Frame &_desPos,
                                       KDL::Twist &_desVel,
                                       KDL::Twist &_desAcc,
                                       double _Kpp, double _Kpo,
-                                      double _Kdp, double _Kdo)
+                                      double _Kdp, double _Kdo, double &e_norm)
 {
 //    // calculate gain matrices
 //    Eigen::Matrix<double,6,6> Kp, Kd;

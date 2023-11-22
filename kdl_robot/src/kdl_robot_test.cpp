@@ -73,6 +73,8 @@ int main(int argc, char **argv)
     ros::Publisher joint5_effort_pub = n.advertise<std_msgs::Float64>("/iiwa/iiwa_joint_5_effort_controller/command", 1);
     ros::Publisher joint6_effort_pub = n.advertise<std_msgs::Float64>("/iiwa/iiwa_joint_6_effort_controller/command", 1);
     ros::Publisher joint7_effort_pub = n.advertise<std_msgs::Float64>("/iiwa/iiwa_joint_7_effort_controller/command", 1);    
+    // error publisher
+    ros::Publisher error_pub = n.advertise<std_msgs::Float64>("/iiwa/error",1);
 
     // Services
     ros::ServiceClient robot_set_state_srv = n.serviceClient<gazebo_msgs::SetModelConfiguration>("/gazebo/set_model_configuration");
@@ -102,7 +104,7 @@ int main(int argc, char **argv)
         ROS_INFO("Failed to set robot state.");
 
     // Messages
-    std_msgs::Float64 tau1_msg, tau2_msg, tau3_msg, tau4_msg, tau5_msg, tau6_msg, tau7_msg;
+    std_msgs::Float64 tau1_msg, tau2_msg, tau3_msg, tau4_msg, tau5_msg, tau6_msg, tau7_msg, error_msg;
     std_srvs::Empty pauseSrv;
 
     // Wait for robot and object state
@@ -132,6 +134,9 @@ int main(int argc, char **argv)
     // Torques
     Eigen::VectorXd tau;
     tau.resize(robot.getNrJnts());
+
+    // Error
+    double error;
 
     // Update robot
     robot.update(jnt_pos, jnt_vel);
@@ -168,7 +173,7 @@ int main(int argc, char **argv)
     trajectory_point p = planner.compute_trajectory(t);
 
     // Gains
-    double Kp = 80, Kd = 1.3*sqrt(Kp);
+    double Kp = 100, Kd = 5*sqrt(Kp);
 
     // Retrieve initial simulation time
     ros::Time begin = ros::Time::now();
@@ -228,7 +233,7 @@ int main(int argc, char **argv)
             robot.getInverseKinematics(des_pose, des_cart_vel, des_cart_acc,qd,dqd,ddqd);
 
             // joint space inverse dynamics control
-            tau = controller_.idCntr(qd, dqd, ddqd, Kp, Kd);
+            tau = controller_.idCntr(qd, dqd, ddqd, Kp, Kd, error);
 
             // double Kp = 1000;
             // double Ko = 1000;
@@ -244,6 +249,7 @@ int main(int argc, char **argv)
             tau5_msg.data = tau[4];
             tau6_msg.data = tau[5];
             tau7_msg.data = tau[6];
+            error_msg.data = error;
 
             // Publish
             joint1_effort_pub.publish(tau1_msg);
@@ -253,6 +259,7 @@ int main(int argc, char **argv)
             joint5_effort_pub.publish(tau5_msg);
             joint6_effort_pub.publish(tau6_msg);
             joint7_effort_pub.publish(tau7_msg);
+            error_pub.publish(error_msg);
 
             ros::spinOnce();
             loop_rate.sleep();
