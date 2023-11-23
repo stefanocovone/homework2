@@ -157,7 +157,7 @@ int main(int argc, char **argv)
 
     /////////////////// TESTING /////////////////////////////////////////////////////////
     // uncomment this for linear trajectory with trapezoidal profile
-    KDLPlanner planner(traj_duration, acc_duration, init_position, end_position);
+    // KDLPlanner planner(traj_duration, acc_duration, init_position, end_position);
 
     // uncomment this for linear trajectory with cubic profile
     // KDLPlanner planner(traj_duration, init_position, end_position);
@@ -166,7 +166,7 @@ int main(int argc, char **argv)
     // KDLPlanner planner(traj_duration, acc_duration, init_position, traj_radius);
 
     // uncomment this for circle trajectory with cubic profile
-    // KDLPlanner planner(traj_duration, init_position, traj_radius);
+    KDLPlanner planner(traj_duration, init_position, traj_radius);
     /////////////////////////////////////////////////////////////////////////////////////
 
     // Retrieve the first trajectory point
@@ -233,13 +233,13 @@ int main(int argc, char **argv)
             robot.getInverseKinematics(des_pose, des_cart_vel, des_cart_acc,qd,dqd,ddqd);
 
             // joint space inverse dynamics control
-            tau = controller_.idCntr(qd, dqd, ddqd, Kp, Kd, error);
+            //tau = controller_.idCntr(qd, dqd, ddqd, Kp, Kd, error);
 
-            // double Kp = 1000;
-            // double Ko = 1000;
-            // // Cartesian space inverse dynamics control
-            // tau = controller_.idCntr(des_pose, des_cart_vel, des_cart_acc,
-            //                          Kp, Ko, 2*sqrt(Kp), 2*sqrt(Ko));
+            double Kp = 100;
+            double Ko = 100;
+            // Cartesian space inverse dynamics control
+            tau = controller_.idCntr(des_pose, des_cart_vel, des_cart_acc,
+                                     Kp, Ko, 2*sqrt(Kp), 2*sqrt(Ko),error);
 
             // Set torques
             tau1_msg.data = tau[0];

@@ -16,7 +16,7 @@ Eigen::VectorXd KDLController::idCntr(KDL::JntArray &_qd,
 
     // calculate errors
     Eigen::VectorXd e = _qd.data - q;
-    std::cout << "error norm: " << e.norm() << std::endl;
+    // std::cout << "error norm: " << e.norm() << std::endl;
     e_norm = e.norm();
     Eigen::VectorXd de = _dqd.data - dq;
 
@@ -31,42 +31,44 @@ Eigen::VectorXd KDLController::idCntr(KDL::Frame &_desPos,
                                       double _Kpp, double _Kpo,
                                       double _Kdp, double _Kdo, double &e_norm)
 {
-//    // calculate gain matrices
-//    Eigen::Matrix<double,6,6> Kp, Kd;
-//    Kp.block(0,0,3,3) = _Kpp*Eigen::Matrix3d::Identity();
-//    Kp.block(3,3,3,3) = _Kpo*Eigen::Matrix3d::Identity();
-//    Kd.block(0,0,3,3) = _Kdp*Eigen::Matrix3d::Identity();
-//    Kd.block(3,3,3,3) = _Kdo*Eigen::Matrix3d::Identity();
+    // calculate gain matrices
+    Eigen::Matrix<double,6,6> Kp, Kd;
+    Kp = Eigen::MatrixXd::Zero(6,6);
+    Kd = Eigen::MatrixXd::Zero(6,6);
+    Kp.block(0,0,3,3) = _Kpp*Eigen::Matrix3d::Identity();
+    Kp.block(3,3,3,3) = _Kpo*Eigen::Matrix3d::Identity();
+    Kd.block(0,0,3,3) = _Kdp*Eigen::Matrix3d::Identity();
+    Kd.block(3,3,3,3) = _Kdo*Eigen::Matrix3d::Identity();
 
-//    // read current state
-//    Eigen::Matrix<double,6,7> J = robot_->getJacobian();
-//    Eigen::Matrix<double,7,7> I = Eigen::Matrix<double,7,7>::Identity();
-//    Eigen::Matrix<double,7,7> M = robot_->getJsim();
-//    Eigen::Matrix<double,7,6> Jpinv = weightedPseudoInverse(M,J);
-//    //Eigen::Matrix<double,7,6> Jpinv = pseudoinverse(J);
+    // read current state
+    Eigen::Matrix<double,6,7> J = toEigen(robot_->getEEJacobian());
+    Eigen::Matrix<double,7,7> I = Eigen::Matrix<double,7,7>::Identity();
+    Eigen::Matrix<double,7,7> M = robot_->getJsim();
+    Eigen::Matrix<double,7,6> Jpinv = weightedPseudoInverse(M,J);
+    //Eigen::Matrix<double,7,6> Jpinv = pseudoinverse(J);
 
-//    // position
-//    Eigen::Vector3d p_d(_desPos.p.data);
-//    Eigen::Vector3d p_e(robot_->getCartesianPose().p.data);
-//    Eigen::Matrix<double,3,3,Eigen::RowMajor> R_d(_desPos.M.data);
-//    Eigen::Matrix<double,3,3,Eigen::RowMajor> R_e(robot_->getCartesianPose().M.data);
-//    R_d = matrixOrthonormalization(R_d);
-//    R_e = matrixOrthonormalization(R_e);
+    // position
+    Eigen::Vector3d p_d(_desPos.p.data);
+    Eigen::Vector3d p_e(robot_->getEEFrame().p.data);
+    Eigen::Matrix<double,3,3,Eigen::RowMajor> R_d(_desPos.M.data);
+    Eigen::Matrix<double,3,3,Eigen::RowMajor> R_e(robot_->getEEFrame().M.data);
+    R_d = matrixOrthonormalization(R_d);
+    R_e = matrixOrthonormalization(R_e);
 
-//    // velocity
-//    Eigen::Vector3d dot_p_d(_desVel.vel.data);
-//    Eigen::Vector3d dot_p_e(robot_->getCartesianVelocity().vel.data);
-//    Eigen::Vector3d omega_d(_desVel.rot.data);
-//    Eigen::Vector3d omega_e(robot_->getCartesianVelocity().rot.data);
+    // velocity
+    Eigen::Vector3d dot_p_d(_desVel.vel.data);
+    Eigen::Vector3d dot_p_e(robot_->getEEVelocity().vel.data);
+    Eigen::Vector3d omega_d(_desVel.rot.data);
+    Eigen::Vector3d omega_e(robot_->getEEVelocity().rot.data);
 
-//    // acceleration
-//    Eigen::Matrix<double,6,1> dot_dot_x_d;
-//    Eigen::Matrix<double,3,1> dot_dot_p_d(_desAcc.vel.data);
-//    Eigen::Matrix<double,3,1> dot_dot_r_d(_desAcc.rot.data);
+    // acceleration
+    Eigen::Matrix<double,6,1> dot_dot_x_d;
+    Eigen::Matrix<double,3,1> dot_dot_p_d(_desAcc.vel.data);
+    Eigen::Matrix<double,3,1> dot_dot_r_d(_desAcc.rot.data);
 
-//    // compute linear errors
-//    Eigen::Matrix<double,3,1> e_p = computeLinearError(p_d,p_e);
-//    Eigen::Matrix<double,3,1> dot_e_p = computeLinearError(dot_p_d,dot_p_e);
+    // compute linear errors
+    Eigen::Matrix<double,3,1> e_p = computeLinearError(p_d,p_e);
+    Eigen::Matrix<double,3,1> dot_e_p = computeLinearError(dot_p_d,dot_p_e);
 
 //    // shared control
 //    // Eigen::Vector3d lin_acc;
@@ -74,21 +76,22 @@ Eigen::VectorXd KDLController::idCntr(KDL::Frame &_desPos,
 //    // lin_acc << dot_dot_p_d + _Kdp*(dot_e_p) + _Kpp*(e_p); // assuming no friction no loads
 //    // Eigen::Matrix<double,3,3> R_sh = shCntr(lin_acc);
 
-//    // compute orientation errors
-//    Eigen::Matrix<double,3,1> e_o = computeOrientationError(R_d,R_e);
-//    Eigen::Matrix<double,3,1> dot_e_o = computeOrientationVelocityError(omega_d,
-//                                                                        omega_e,
-//                                                                        R_d,
-//                                                                        R_e);
-//    Eigen::Matrix<double,6,1> x_tilde;
-//    Eigen::Matrix<double,6,1> dot_x_tilde;
-//    x_tilde << e_p, e_o;
-//    dot_x_tilde << dot_e_p, -omega_e;//dot_e_o;
-//    dot_dot_x_d << dot_dot_p_d, dot_dot_r_d;
+    // compute orientation errors
+    Eigen::Matrix<double,3,1> e_o = computeOrientationError(R_d,R_e);
+    Eigen::Matrix<double,3,1> dot_e_o = computeOrientationVelocityError(omega_d,
+                                                                        omega_e,
+                                                                        R_d,
+                                                                        R_e);
+    Eigen::Matrix<double,6,1> x_tilde;
+    Eigen::Matrix<double,6,1> dot_x_tilde;
+    x_tilde << e_p, e_o;
+    e_norm = x_tilde.norm();
+    dot_x_tilde << dot_e_p, dot_e_o;    //dot_e_o;
+    dot_dot_x_d << dot_dot_p_d, dot_dot_r_d;
 
-//    // null space control
-//    double cost;
-//    Eigen::VectorXd grad = gradientJointLimits(robot_->getJntValues(),robot_->getJntLimits(),cost);
+    // null space control
+    double cost;
+    Eigen::VectorXd grad = gradientJointLimits(robot_->getJntValues(),robot_->getJntLimits(),cost);
 
 ////    std::cout << "---------------------" << std::endl;
 ////    std::cout << "p_d: " << std::endl << p_d << std::endl;
@@ -112,11 +115,11 @@ Eigen::VectorXd KDLController::idCntr(KDL::Frame &_desPos,
 ////    std::cout << "Jnt lmt gradient: " << std::endl << grad.transpose() << std::endl;
 ////    std::cout << "---------------------" << std::endl;
 
-//    // inverse dynamics
-//    Eigen::Matrix<double,6,1> y;
-//    y << dot_dot_x_d - robot_->getJacDotqDot() + Kd*dot_x_tilde + Kp*x_tilde;
+    // inverse dynamics
+    Eigen::Matrix<double,6,1> y;
+    y << dot_dot_x_d - robot_->getEEJacDotqDot() + Kd*dot_x_tilde + Kp*x_tilde;
 
-//    return M * (Jpinv*y + (I-Jpinv*J)*(/*- 10*grad */- 1*robot_->getJntVelocities()))
-//            + robot_->getGravity() + robot_->getCoriolis();
+    return M * (Jpinv*y + (I-Jpinv*J)*(/*- 10*grad */- 1*robot_->getJntVelocities()))
+            + robot_->getGravity() + robot_->getCoriolis();
 }
 

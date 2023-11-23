@@ -179,8 +179,9 @@ inline Eigen::Matrix<double,3,1> computeOrientationError(const Eigen::Matrix<dou
 {
 
     Eigen::Matrix<double,3,1> e_o;
+    // this is angle/axis orientation error
     e_o << 0.5*(skew(_R_e.col(0))*(_R_d.col(0)) + skew(_R_e.col(1))*(_R_d.col(1)) + skew(_R_e.col(2))*(_R_d.col(2)));
-//    std::cout << "e_o angle/axis: " << std::endl << e_o.transpose() << std::endl;
+   // std::cout << "e_o angle/axis: " << std::endl << e_o.transpose() << std::endl;
 //    Eigen::Quaterniond q_e(_R_e);
 //    Eigen::Quaterniond q_d(_R_d);
 //    Eigen::Quaterniond q = q_d*q_e.inverse();
@@ -203,6 +204,7 @@ inline Eigen::Matrix<double,3,1> computeOrientationVelocityError(const Eigen::Ma
                                                                  const Eigen::Matrix<double,3,3> &_R_d,
                                                                  const Eigen::Matrix<double,3,3> &_R_e)
 {
+    // angle and axis error
     Eigen::Matrix3d L = -0.5*(skew(_R_d.col(0))*skew(_R_e.col(0)) +
                               skew(_R_d.col(1))*skew(_R_e.col(1)) +
                               skew(_R_d.col(2))*skew(_R_e.col(2)));
