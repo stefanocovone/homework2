@@ -156,6 +156,32 @@ int main(int argc, char **argv)
     double traj_duration = 1.5, acc_duration = 0.5, t = 0.0, init_time_slot = 1.0, traj_radius = 0.2;
 
     /////////////////// TESTING /////////////////////////////////////////////////////////
+    int flag;
+    std::cout << "Choose desired trajectory:" << std::endl
+                << "1. linear (trapezoidal profile)\n" << "2. linear (cubic profile)\n" << 
+                "3. circular (trapezoidal profile)\n" << "4. circular (cubic profile)\n";
+    std::cout << "Insert number: ";
+    std::cin >> flag;
+
+    /*      // CHECK WHY IT DOESN'T WORK
+    switch(flag) {
+        case 1:
+            KDLPlanner planner(traj_duration, acc_duration, init_position, end_position);  
+            break; 
+        case 2:
+            KDLPlanner planner(traj_duration, init_position, end_position); 
+            break;
+        case 3:
+            KDLPlanner planner(traj_duration, acc_duration, init_position, traj_radius); 
+            break;
+        case 4:
+            KDLPlanner planner(traj_duration, init_position, traj_radius);
+            break;
+        default:
+            KDLPlanner planner(traj_duration, acc_duration, init_position, end_position);  
+    }
+    */
+
     // uncomment this for linear trajectory with trapezoidal profile
     // KDLPlanner planner(traj_duration, acc_duration, init_position, end_position);
 
