@@ -214,24 +214,7 @@ trajectory_point KDLPlanner::compute_linear_trajectory(double time){
   
   traj.pos = trajInit_ + abscissa.s * (trajEnd_ - trajInit_);
   traj.vel = abscissa.sdot * (trajEnd_ - trajInit_);
-  traj.acc = abscissa.sddot * (trajEnd_ - trajInit_);  if (time >= 0 && time <= trajDuration_) {
-  abscissa.s = coeffs(3)*pow(time,3) + coeffs(2)*pow(time,2) + coeffs(1)*time + coeffs(0);
-  abscissa.sdot = 3*coeffs(3)*pow(time,2) + 2*coeffs(2)*time + coeffs(1);
-  abscissa.sddot = 6*coeffs(3)*time + 2*coeffs(2);
-  }
-  else {
-    // error
-  } 
-  // DEBUG
-  // std::cout << "coeffs: " << coeffs << std::endl;
-  // std::cout << "s: " << abscissa.s << std::endl;
-
-  return abscissa;
-}
-
-
-  // debug
-  // std::cout << "s: " << abscissa.s << std::endl;
+  traj.acc = abscissa.sddot * (trajEnd_ - trajInit_);
   return traj;
 }
 
