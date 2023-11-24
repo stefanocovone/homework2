@@ -107,6 +107,14 @@ int main(int argc, char **argv)
     std_msgs::Float64 tau1_msg, tau2_msg, tau3_msg, tau4_msg, tau5_msg, tau6_msg, tau7_msg, error_msg;
     std_srvs::Empty pauseSrv;
 
+    // CHOOSE THE DESIRED TRAJECTORY
+    int flag;
+    std::cout << "Choose desired trajectory:" << std::endl
+                << "1. linear (trapezoidal profile)\n" << "2. linear (cubic profile)\n" << 
+                "3. circular (trapezoidal profile)\n" << "4. circular (cubic profile)\n";
+    std::cout << "Insert number: ";
+    std::cin >> flag;
+
     // Wait for robot and object state
     while (!(robot_state_available))
     {
@@ -156,12 +164,7 @@ int main(int argc, char **argv)
     double traj_duration = 1.5, acc_duration = 0.5, t = 0.0, init_time_slot = 1.0, traj_radius = 0.2;
 
     /////////////////// TESTING /////////////////////////////////////////////////////////
-    int flag;
-    std::cout << "Choose desired trajectory:" << std::endl
-                << "1. linear (trapezoidal profile)\n" << "2. linear (cubic profile)\n" << 
-                "3. circular (trapezoidal profile)\n" << "4. circular (cubic profile)\n";
-    std::cout << "Insert number: ";
-    std::cin >> flag;
+
 
     /*      // CHECK WHY IT DOESN'T WORK
     switch(flag) {
