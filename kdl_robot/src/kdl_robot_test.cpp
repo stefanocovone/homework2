@@ -270,11 +270,11 @@ int main(int argc, char **argv)
             // joint space inverse dynamics control
             tau = controller_.idCntr(qd, dqd, ddqd, Kp, Kd, error);
 
-            double Kp = 100;
-            double Ko = 100;
+            double Kp = 400;
+            double Ko = 400;
             // Cartesian space inverse dynamics control
             // tau = controller_.idCntr(des_pose, des_cart_vel, des_cart_acc,
-            //                         Kp, Ko, 2*sqrt(Kp), 2*sqrt(Ko),error);
+            //                          Kp, Ko, 2*sqrt(Kp), 2*sqrt(Ko),error);
 
             // Set torques
             tau1_msg.data = tau[0];

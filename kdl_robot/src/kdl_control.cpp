@@ -85,7 +85,7 @@ Eigen::VectorXd KDLController::idCntr(KDL::Frame &_desPos,
     Eigen::Matrix<double,6,1> x_tilde;
     Eigen::Matrix<double,6,1> dot_x_tilde;
     x_tilde << e_p, e_o;
-    e_norm = e_p.norm();
+    e_norm = x_tilde.norm();
     dot_x_tilde << dot_e_p, dot_e_o;    //dot_e_o;
     dot_dot_x_d << dot_dot_p_d, dot_dot_r_d;
 

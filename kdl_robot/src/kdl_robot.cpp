@@ -194,11 +194,6 @@ void KDLRobot::getInverseKinematics(KDL::Frame &f,
     Eigen::Matrix<double,7,6> Jpinv = pseudoinverse(J);
 
     ddq.data = Jpinv*(x_ddot - Jdot_qdot);
-
-    //per trovare jacobiano getEEJacobian().data, bisogna fare l'inversa
-    //ddxe = acc.data
-    //dotJdotq -> getEEJacDotqDot
-
                               }
 ////////////////////////////////////////////////////////////////////////////////
 //                              END-EFFECTOR                                  //
