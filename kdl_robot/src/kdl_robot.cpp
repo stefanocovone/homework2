@@ -188,7 +188,12 @@ void KDLRobot::getInverseKinematics(KDL::Frame &f,
     q = getInvKin(q,f);
     ikVelSol_->CartToJnt(q,twist,dq);
 
-    ddq = pseudoinverse(getEEJacobian().data)*(acc.data-getEEJacDotqDot().data);
+    Eigen::Matrix<double,6,7> J = toEigen(getEEJacobian());
+    Eigen::VectorXd x_ddot = toEigen(acc); 
+    Eigen::VectorXd Jdot_qdot = getEEJacDotqDot();
+    Eigen::Matrix<double,7,6> Jpinv = pseudoinverse(J);
+
+    ddq.data = Jpinv*(x_ddot - Jdot_qdot);
 
     //per trovare jacobiano getEEJacobian().data, bisogna fare l'inversa
     //ddxe = acc.data
