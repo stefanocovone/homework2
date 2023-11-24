@@ -46,6 +46,28 @@ void jointStateCallback(const sensor_msgs::JointState & msg)
     }
 }
 
+KDLPlanner chooseTrajectory(int trajFlag, Eigen::Vector3d init_position, Eigen::Vector3d end_position, double traj_duration, double acc_duration, 
+                    double t, double init_time_slot, double traj_radius) {
+          // CHECK WHY IT DOESN'T WORK
+    switch(trajFlag) {
+        case 1:
+            return KDLPlanner(traj_duration, acc_duration, init_position, end_position);  
+            break; 
+        case 2:
+            return KDLPlanner(traj_duration, init_position, end_position); 
+            break;
+        case 3:
+            return KDLPlanner(traj_duration, acc_duration, init_position, traj_radius); 
+            break;
+        case 4:
+            return KDLPlanner(traj_duration, init_position, traj_radius);
+            break;
+        default:
+            return KDLPlanner(traj_duration, acc_duration, init_position, end_position);  
+    }
+    
+                    }
+
 // Main
 int main(int argc, char **argv)
 {
@@ -108,12 +130,12 @@ int main(int argc, char **argv)
     std_srvs::Empty pauseSrv;
 
     // CHOOSE THE DESIRED TRAJECTORY
-    int flag;
+    int trajFlag;
     std::cout << "Choose desired trajectory:" << std::endl
                 << "1. linear (trapezoidal profile)\n" << "2. linear (cubic profile)\n" << 
                 "3. circular (trapezoidal profile)\n" << "4. circular (cubic profile)\n";
     std::cout << "Insert number: ";
-    std::cin >> flag;
+    std::cin >> trajFlag;
 
     // Wait for robot and object state
     while (!(robot_state_available))
@@ -165,25 +187,8 @@ int main(int argc, char **argv)
 
     /////////////////// TESTING /////////////////////////////////////////////////////////
 
-
-    /*      // CHECK WHY IT DOESN'T WORK
-    switch(flag) {
-        case 1:
-            KDLPlanner planner(traj_duration, acc_duration, init_position, end_position);  
-            break; 
-        case 2:
-            KDLPlanner planner(traj_duration, init_position, end_position); 
-            break;
-        case 3:
-            KDLPlanner planner(traj_duration, acc_duration, init_position, traj_radius); 
-            break;
-        case 4:
-            KDLPlanner planner(traj_duration, init_position, traj_radius);
-            break;
-        default:
-            KDLPlanner planner(traj_duration, acc_duration, init_position, end_position);  
-    }
-    */
+    KDLPlanner planner = chooseTrajectory(trajFlag, init_position, end_position, traj_duration, acc_duration, 
+                    t, init_time_slot, traj_radius);
 
     // uncomment this for linear trajectory with trapezoidal profile
     // KDLPlanner planner(traj_duration, acc_duration, init_position, end_position);
@@ -195,7 +200,7 @@ int main(int argc, char **argv)
     // KDLPlanner planner(traj_duration, acc_duration, init_position, traj_radius);
 
     // uncomment this for circle trajectory with cubic profile
-    KDLPlanner planner(traj_duration, init_position, traj_radius);
+    // KDLPlanner planner(traj_duration, init_position, traj_radius);
     /////////////////////////////////////////////////////////////////////////////////////
 
     // Retrieve the first trajectory point
