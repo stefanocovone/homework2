@@ -183,13 +183,14 @@ int main(int argc, char **argv)
     end_position << init_cart_pose.p.x(), -init_cart_pose.p.y(), init_cart_pose.p.z();
 
     // Plan trajectory    
-    double traj_duration = 1.5, acc_duration = 0.5, t = 0.0, init_time_slot = 1.0, traj_radius = 0.2;
+    double traj_duration = 1.5, acc_duration = 0.5, t = 0.0, init_time_slot = 1.0, traj_radius = 0.1;
 
     /////////////////// TESTING /////////////////////////////////////////////////////////
 
     KDLPlanner planner = chooseTrajectory(trajFlag, init_position, end_position, traj_duration, acc_duration, 
                     t, init_time_slot, traj_radius);
 
+    // THIS IS NOT NECESSARY ANYMORE
     // uncomment this for linear trajectory with trapezoidal profile
     // KDLPlanner planner(traj_duration, acc_duration, init_position, end_position);
 
