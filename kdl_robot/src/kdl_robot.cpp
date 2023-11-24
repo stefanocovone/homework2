@@ -184,7 +184,8 @@ void KDLRobot::getInverseKinematics(KDL::Frame &f,
                               KDL::Twist &acc,
                               KDL::JntArray &q,
                               KDL::JntArray &dq,
-                              KDL::JntArray &ddq){
+                              KDL::JntArray &ddq)
+{
     q = getInvKin(q,f);
     ikVelSol_->CartToJnt(q,twist,dq);
 
@@ -194,7 +195,19 @@ void KDLRobot::getInverseKinematics(KDL::Frame &f,
     Eigen::Matrix<double,7,6> Jpinv = pseudoinverse(J);
 
     ddq.data = Jpinv*(x_ddot - Jdot_qdot);
-                              }
+}
+
+Eigen::VectorXd KDLRobot::getFriction()
+{
+    double damping = 0.5;
+    Eigen::MatrixXd F = damping*Eigen::MatrixXd::Identity(7,7);
+
+    Eigen::VectorXd friction;
+    friction.resize(chain_.getNrOfJoints());
+    friction = F*getJntVelocities();
+    std::cout << "friction: "<< friction << std::endl;
+    return friction;
+}
 ////////////////////////////////////////////////////////////////////////////////
 //                              END-EFFECTOR                                  //
 ////////////////////////////////////////////////////////////////////////////////

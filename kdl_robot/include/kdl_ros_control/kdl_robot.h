@@ -67,6 +67,8 @@ public:
                               KDL::JntArray &dq,
                               KDL::JntArray &ddq);
 
+    Eigen::VectorXd getFriction();
+
 private:
 
     // chain

@@ -208,7 +208,7 @@ int main(int argc, char **argv)
     trajectory_point p = planner.compute_trajectory(t);
 
     // Gains
-    double Kp = 500, Kd = 3*sqrt(Kp);
+    double Kp = 100, Kd = sqrt(Kp);
 
     // Retrieve initial simulation time
     ros::Time begin = ros::Time::now();
@@ -269,7 +269,7 @@ int main(int argc, char **argv)
 
             // joint space inverse dynamics control
             tau = controller_.idCntr(qd, dqd, ddqd, Kp, Kd, error);
-
+            std::cout << "tau: " << tau << std::endl;
             double Kp = 400;
             double Ko = 400;
             // Cartesian space inverse dynamics control

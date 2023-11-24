@@ -22,7 +22,7 @@ Eigen::VectorXd KDLController::idCntr(KDL::JntArray &_qd,
 
     Eigen::VectorXd ddqd = _ddqd.data;
     return robot_->getJsim() * (ddqd + _Kd*de + _Kp*e)
-            + robot_->getCoriolis() + robot_->getGravity() /*friction compensation?*/;
+            + robot_->getCoriolis() + robot_->getGravity() /*+ robot_->getFriction() /*friction compensation?*/;
 }
 
 Eigen::VectorXd KDLController::idCntr(KDL::Frame &_desPos,
