@@ -208,7 +208,7 @@ int main(int argc, char **argv)
     trajectory_point p = planner.compute_trajectory(t);
 
     // Gains
-    double Kp = 500, Kd = 0.5*sqrt(Kp);
+    double Kp = 100, Kd = 2*sqrt(Kp);
 
     // Retrieve initial simulation time
     ros::Time begin = ros::Time::now();
