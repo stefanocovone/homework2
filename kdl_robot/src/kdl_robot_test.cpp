@@ -208,7 +208,7 @@ int main(int argc, char **argv)
     trajectory_point p = planner.compute_trajectory(t);
 
     // Gains
-    double Kp = 100, Kd = 2*sqrt(Kp);
+    double Kp = 500, Kd = 0.5*sqrt(Kp);
 
     // Retrieve initial simulation time
     ros::Time begin = ros::Time::now();
@@ -268,13 +268,13 @@ int main(int argc, char **argv)
             robot.getInverseKinematics(des_pose, des_cart_vel, des_cart_acc,qd,dqd,ddqd);
 
             // joint space inverse dynamics control
-            // tau = controller_.idCntr(qd, dqd, ddqd, Kp, Kd, error);
+            tau = controller_.idCntr(qd, dqd, ddqd, Kp, Kd, error);
             std::cout << "tau: " << tau << std::endl;
             double Kp = 400;
             double Ko = 400;
             // Cartesian space inverse dynamics control
-            tau = controller_.idCntr(des_pose, des_cart_vel, des_cart_acc,
-                                     Kp, Ko, 2*sqrt(Kp), 2*sqrt(Ko),error);
+            // tau = controller_.idCntr(des_pose, des_cart_vel, des_cart_acc,
+            //                          Kp, Ko, 2*sqrt(Kp), 2*sqrt(Ko),error);
 
             // Set torques
             tau1_msg.data = tau[0];
