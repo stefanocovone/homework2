@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/stefanocovone/dev/hw2/src/iiwa_stack/iiwa_description/cmake-build-debug/devel/setup.sh

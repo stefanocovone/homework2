@@ -1,0 +1,8 @@
+prefix=/home/stefanocovone/dev/hw2/src/iiwa_stack/iiwa_gazebo/cmake-build-debug/devel
+
+Name: iiwa_gazebo
+Description: Description of iiwa_gazebo
+Version: 1.4.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

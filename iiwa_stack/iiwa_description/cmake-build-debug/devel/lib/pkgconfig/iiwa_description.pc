@@ -1,0 +1,8 @@
+prefix=/home/stefanocovone/dev/hw2/src/iiwa_stack/iiwa_description/cmake-build-debug/devel
+
+Name: iiwa_description
+Description: Description of iiwa_description
+Version: 1.4.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
